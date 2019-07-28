@@ -34,6 +34,7 @@ return array(
     'validate_invalid'                  => 'Das Feld "{field}" ist ung&uuml;ltig.',
     'validate_starts'                   => 'Das Feld "{field}" muss mit {param} beginnen.',
     'validate_extension'                => 'Das Feld "{field}" kann nur eine der folgenden Erweiterungen haben: {param}',
+    'validate_file_size'                => 'Das Feld "{field}" muss keiner sein als: {param}',
     'validate_required_file'            => 'Das Feld "{field}" ist erforderlich.',
     'validate_equalsfield'              => 'Das Feld "{field}" ist nicht gleich dem Feld "{param}".',
     'validate_iban'                     => 'Das Feld "{field}" muss eine g&uuml;ltige IBAN enthalten.',

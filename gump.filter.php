@@ -29,7 +29,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_noise_words(string $value,array $params = null): string {
+    public function filter_noise_words(string $value,array $params = null): string {
         $value = preg_replace('/\s\s+/u', chr(32), $value);
         $value = " $value ";
         $words = explode(',', $this->gump->en_noise_words);
@@ -52,7 +52,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_rmpunctuation(string $value,array $params = null): string {
+    public function filter_rmpunctuation(string $value,array $params = null): string {
         return preg_replace("/(?![.=$'€%-])\p{P}/u", '', $value);
     }
 
@@ -63,7 +63,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_sanitize_string(string $value,array $params = null): string {
+    public function filter_sanitize_string(string $value,array $params = null): string {
         return filter_var($value, FILTER_SANITIZE_STRING);
     }
 
@@ -74,7 +74,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_urlencode(string $value,array $params = null): string {
+    public function filter_urlencode(string $value,array $params = null): string {
         return filter_var($value, FILTER_SANITIZE_ENCODED);
     }
 
@@ -85,7 +85,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_htmlencode(string $value,array $params = null): string {
+    public function filter_htmlencode(string $value,array $params = null): string {
         return filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
@@ -96,18 +96,17 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_sanitize_email(string $value,array $params = null): string
-    {
+    public function filter_sanitize_email(string $value,array $params = null): string {
         return filter_var($value, FILTER_SANITIZE_EMAIL);
     }
 
     /**
      * Sanitize the string by removing illegal characters from numbers.
      * @param string $value
-     * @param array  $params
-     * @return string
+     * @param array $params
+     * @return int
      */
-    protected function filter_sanitize_numbers(string $value,array $params = null): string {
+    public function filter_sanitize_numbers(string $value,array $params = null): int {
         return filter_var($value, FILTER_SANITIZE_NUMBER_INT);
     }
 
@@ -117,7 +116,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_sanitize_floats(string $value,array $params = null): string {
+    public function filter_sanitize_floats(string $value,array $params = null): string {
         return filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     }
 
@@ -127,7 +126,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_basic_tags(string $value,array $params = null): string {
+    public function filter_basic_tags(string $value,array $params = null): string {
         return strip_tags($value, $this->gump->basic_tags);
     }
 
@@ -137,7 +136,7 @@ class Filters {
      * @param array $params
      * @return int
      */
-    protected function filter_whole_number(string $value,array $params = null): int {
+    public function filter_whole_number(string $value,array $params = null): int {
         return intval($value);
     }
 
@@ -148,18 +147,18 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_ms_word_characters(string $value,array $params = null): string {
+    public function filter_ms_word_characters(string $value,array $params = null): string {
         $word_open_double  = '“';
         $word_close_double = '”';
         $web_safe_double   = '"';
 
-        $value = str_replace(array($word_open_double, $word_close_double), $web_safe_double, $value);
+        $value = str_replace([$word_open_double, $word_close_double], $web_safe_double, $value);
 
         $word_open_single  = '‘';
         $word_close_single = '’';
         $web_safe_single   = "'";
 
-        $value = str_replace(array($word_open_single, $word_close_single), $web_safe_single, $value);
+        $value = str_replace([$word_open_single, $word_close_single], $web_safe_single, $value);
 
         $word_em     = '–';
         $web_safe_em = '-';
@@ -180,7 +179,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_lower_case(string $value,array $params = null): string {
+    public function filter_lower_case(string $value,array $params = null): string {
         return strtolower($value);
     }
 
@@ -190,7 +189,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_upper_case(string $value,array $params = null): string {
+    public function filter_upper_case(string $value,array $params = null): string {
         return strtoupper($value);
     }
 
@@ -203,10 +202,9 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_slug(string $value,array $params = null): string {
+    public function filter_slug(string $value,array $params = null): string {
         $delimiter = '-';
-        $slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $value))))), $delimiter));
-        return $slug;
+        return strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $value))))), $delimiter));
     }
 
     /**
@@ -215,7 +213,7 @@ class Filters {
      * @param array  $params
      * @return string
      */
-    protected function filter_ucfirst(string $value,array $params = null): string {
+    public function filter_ucfirst(string $value,array $params = null): string {
         return ucfirst($value);
     }
 }

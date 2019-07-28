@@ -116,9 +116,7 @@ class GUMP {
      */
     public static function is_valid(array $data, array $validators) {
         $gump = self::getInstance();
-
         $gump->validation_rules($validators);
-
         if ($gump->run($data) === false) {
             return $gump->get_readable_errors(false);
         }
@@ -283,11 +281,11 @@ class GUMP {
         $fields = array_keys($mismatch);
 
         foreach ($fields as $field) {
-            $this->errors[] = array(
+            $this->errors[] = [
                 'field' => $field,
                 'value' => $data[$field],
                 'rule' => 'mismatch',
-                'param' => null);
+                'param' => null];
         }
     }
 
@@ -312,7 +310,7 @@ class GUMP {
             } else {
                 $value = $input[$field];
                 if (is_array($value)) {
-                    $value = $this->sanitize($value);
+                    $value = $this->sanitize($value, array(), $utf8_encode);
                 }
                 if (is_string($value)) {
                     if ($magic_quotes === true) {
@@ -331,7 +329,7 @@ class GUMP {
                         }
                     }
 
-                    $value = filter_var($value, FILTER_SANITIZE_STRING);
+                    $value = $this->filters->filter_basic_tags($value);
                 }
 
                 $return[$field] = $value;
@@ -364,17 +362,17 @@ class GUMP {
 
         foreach ($ruleset as $field => $rules) {
             $rules = explode($rules_delimiter, $rules);
-            $look_for = array('required_file', 'required');
+            $look_for = ['required_file', 'required'];
 
             if (count(array_intersect($look_for, $rules)) > 0 || (isset($input[$field]))) {
                 if (isset($input[$field])) {
                     if (is_array($input[$field]) && in_array('required_file', $ruleset)) {
                         $input_array = $input[$field];
                     } else {
-                        $input_array = array($input[$field]);
+                        $input_array = [$input[$field]];
                     }
                 } else {
-                    $input_array = array('');
+                    $input_array = [''];
                 }
 
                 foreach ($input_array as $value) {
@@ -385,10 +383,10 @@ class GUMP {
 
                         // Check if we have rule parameters
                         if (strstr($rule, $parameters_delimiter) !== false) {
-                            $rule   = explode($parameters_delimiter, $rule);
-                            $method = 'validate_'.$rule[0];
-                            $param  = $rule[1];
-                            $rule   = $rule[0];
+                            $rules  = explode(',', $rule, 2);
+                            $rule   = array_shift($rules);
+                            $param  = implode(',', $rules);
+                            $method = 'validate_'.$rule;
 
                             // If there is a reference to a field
                             if (preg_match('/(?:(?:^|;)_([a-z_]+))/', $param, $matches)) {
@@ -412,11 +410,7 @@ class GUMP {
                             $result = call_user_func(self::$validation_methods[$rule], $field, $input, $param);
                             if($result === false) {
                                 if (array_search($result['field'], array_column($this->errors, 'field')) === false) {
-                                    $this->errors[] = array(
-                                        'field' => $field,
-                                        'value' => $input[$field],
-                                        'rule' => $rule,
-                                        'param' => $param);
+                                    $this->errors[] = ['field' => $field, 'value' => $input[$field], 'rule' => $rule, 'param' => $param];
                                 }
                             }
                         } else {
@@ -435,7 +429,7 @@ class GUMP {
      * @param string $field
      * @param string $readable_name
      */
-    public static function set_field_name($field, $readable_name): void {
+    public static function set_field_name(string $field,string $readable_name): void {
         self::$fields[$field] = $readable_name;
     }
 
@@ -461,7 +455,7 @@ class GUMP {
      * @param string $message
      * @throws \Exception
      */
-    public static function set_error_message($rule, $message): void {
+    public static function set_error_message(string $rule,string $message): void {
         self::$validation_methods_errors[$rule] = $message;
     }
 
@@ -487,7 +481,7 @@ class GUMP {
      *
      * @return array
      */
-    protected function get_messages() {
+    protected function get_messages(): array {
         $lang_file = __DIR__.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.$this->lang.'.php';
         $messages = require $lang_file;
 
@@ -506,7 +500,7 @@ class GUMP {
      * @return array
      * @throws \Exception
      */
-    public function get_readable_errors($convert_to_string = false, $field_class = 'gump-field', $error_class = 'gump-error-message') {
+    public function get_readable_errors(bool $convert_to_string = false,string $field_class = 'gump-field',string $error_class = 'gump-error-message'): array {
         if (empty($this->errors)) {
             return ($convert_to_string) ? null : [];
         }
@@ -560,9 +554,8 @@ class GUMP {
      * @throws \Exception
      */
     public function get_errors_array($convert_to_string = null) {
-        if (empty($this->errors)) {
+        if (empty($this->errors))
             return ($convert_to_string) ? null : [];
-        }
 
         $resp = [];
 
@@ -570,7 +563,7 @@ class GUMP {
         $messages = $this->get_messages();
 
         foreach ($this->errors as $e) {
-            $field = ucwords(str_replace(array('_', '-'), chr(32), $e['field']));
+            $field = ucwords(str_replace(['_', '-'], chr(32), $e['field']));
             $param = $e['param'];
 
             // Let's fetch explicitly if the field names exist
@@ -631,11 +624,11 @@ class GUMP {
                 if (is_array($input[$field])) {
                     $input_array = &$input[$field];
                 } else {
-                    $input_array = array(&$input[$field]);
+                    $input_array = [&$input[$field]];
                 }
 
                 foreach ($input_array as &$value) {
-                    if (is_callable(array($this->filters, 'filter_'.$filter))) {
+                    if (is_callable([$this->filters, 'filter_'.$filter])) {
                         $method = 'filter_'.$filter;
                         $value = $this->filters->$method($value, $params);
                     } elseif (function_exists($filter)) {
@@ -650,5 +643,36 @@ class GUMP {
         }
 
         return $input;
+    }
+
+    /**
+     * @param string $url
+     * @param int $timeout
+     * @return string
+     */
+    public function getExternalContents(string $url, int $timeout = 15): ?string {
+        if(function_exists('curl_init')) {
+            $handle = curl_init();
+            curl_setopt($handle, CURLOPT_URL, $url);
+            curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($handle, CURLOPT_HEADER, true);
+            curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($handle, CURLOPT_TIMEOUT, $timeout);
+            $output = curl_exec($handle);
+            $responseCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            curl_close($handle);
+
+            if ($responseCode == "200")
+                return strval($output);
+        } else {
+            $arrContextOptions= [
+                "ssl"=> ["verify_peer"=>false, "verify_peer_name"=>false], "timeout" => $timeout,
+                "crypto_method" => STREAM_CRYPTO_METHOD_TLS_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT];
+            $output = file_get_contents($url,false, stream_context_create($arrContextOptions));
+            if (!empty($output))
+                return strval($output);
+        }
+
+        return null;
     }
 }
