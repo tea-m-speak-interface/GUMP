@@ -28,6 +28,8 @@
       "ext-curl": "*"
     },
     "autoload": {
-        "psr-4": { "Wixel\\GUMP\\": "" }
+        "psr-0": {
+            "Wixel\\GUMP\\": "/"
+        }
     }
 }
