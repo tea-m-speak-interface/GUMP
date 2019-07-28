@@ -10,6 +10,8 @@
 
 namespace Wixel\GUMP\Validators;
 
+use Wixel\GUMP\GUMP;
+
 class Validators {
     /**
      * @var GUMP
@@ -475,7 +477,7 @@ class Validators {
         }
 
         if ($total % 10 == 0) {
-            return; // Valid
+            return null; // Valid
         }
 
         return ['field' => $field, 'value' => $input[$field], 'rule' => __FUNCTION__, 'param' => $param];
@@ -618,7 +620,7 @@ class Validators {
         if (!isset($input[$field]) || empty($input[$field])) return null;
 
         if (is_numeric($input[$field]) && is_numeric($param) && ($input[$field] <= $param)) {
-            return;
+            return null;
         }
 
         return ['field' => $field, 'value' => $input[$field], 'rule' => __FUNCTION__, 'param' => $param];
@@ -636,7 +638,7 @@ class Validators {
         if (!isset($input[$field]) || empty($input[$field])) return null;
 
         if (is_numeric($input[$field]) && is_numeric($param) && ($input[$field] >= $param)) {
-            return;
+            return null;
         }
 
         return ['field' => $field, 'value' => $input[$field], 'rule' => __FUNCTION__, 'param' => $param];
@@ -666,11 +668,11 @@ class Validators {
      */
     public function validate_required_file(string $field, array $input, ?string $param = null): ?array {
         if (!isset($input[$field])) {
-            return;
+            return null;
         }
 
         if (is_array($input[$field]) && $input[$field]['error'] !== 4) {
-            return;
+            return null;
         }
 
         return ['field' => $field, 'value' => $input[$field], 'rule' => __FUNCTION__, 'param' => $param];

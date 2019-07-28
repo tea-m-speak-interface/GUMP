@@ -10,6 +10,8 @@
 
 namespace Wixel\GUMP\Filters;
 
+use Wixel\GUMP\GUMP;
+
 class Filters {
     /**
      * @var GUMP

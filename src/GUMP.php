@@ -232,6 +232,7 @@ class GUMP {
         }
 
         $this->validation_rules = $rules;
+        return [];
     }
 
     /**
@@ -245,6 +246,7 @@ class GUMP {
         }
 
         $this->filter_rules = $rules;
+        return [];
     }
 
     /**
