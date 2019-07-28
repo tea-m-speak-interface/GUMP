@@ -8,7 +8,7 @@
  * @version     1.6
  */
 
-namespace Wixel\GUMP;
+namespace Wixel\GUMP\Validators;
 
 class Validators {
     /**

@@ -28,8 +28,10 @@
       "ext-curl": "*"
     },
     "autoload": {
-        "psr-0": {
-            "Wixel\\GUMP\\": "src"
+        "psr-4": {
+            "Wixel\\GUMP\\": "src/",
+            "Wixel\\GUMP\\Filters\\": "src/",
+            "Wixel\\GUMP\\Validators\\": "src/"
         }
     }
 }
