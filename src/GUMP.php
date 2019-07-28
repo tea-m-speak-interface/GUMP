@@ -10,8 +10,8 @@
 
 namespace Wixel\GUMP;
 
-use Wixel\GUMP\Validators;
-use Wixel\GUMP\Filters;
+use Wixel\GUMP\Validators\Validators;
+use Wixel\GUMP\Filters\Filters;
 
 class GUMP {
     // Singleton instance of GUMP
